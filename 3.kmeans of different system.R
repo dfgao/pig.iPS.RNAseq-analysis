@@ -197,45 +197,37 @@ pheatmap::pheatmap(t(scale(t(plot.data[plot.data$cluster == 'C_14(856 genes)', 2
                    breaks = unique(c(seq(-2,3, length=256))),
                    fontsize = 9)
 
+# WNT-------
+wnt.genes <- read.table('../4.part4/wnt.txt',sep = ',',header = T)
+c2.wnt.tpm <- c2.tpm[colnames(wnt.genes),c(1,2,27:38)] %>% na.omit()
 
-wnt.genes.filter <- c('CSNK1G3','MARK1','NR4A2','CDK14','WNT7A','FZD3','FZD10','PYGO1','LGR4','WLS','WNT5B',' RNF146','RSPO3','TMEM198','RSPO2')
-c2.wnt.filter.tpm <- sys2.high.tpm[wnt.genes.filter,] %>% na.omit()
-ha_top.col <- list(Exogenous = new.col[c(16:17)], 
-                   Author = c(pal_simpsons("springfield")(16)[7:14]), 
-                   System = pal_igv("default")(11))
-names(ha_top.col$Exogenous) <- factor(c("Silencing","Activation"))
-names(ha_top.col$Author) <- factor(unique(sys2.info$Author))
-names(ha_top.col$System) <- factor(unique(sys2.info$System))
-
-pheatmap::pheatmap(t(scale(t(c2.wnt.filter.tpm))),
+pheatmap::pheatmap(log2(c2.wnt.tpm+1),
                    border_color = NA,
-                   clustering_method = 'average',
+                   clustering_method = 'complete',
+                   color = viridis_pal(alpha = 1, begin = .1)(256),
+                   angle_col = '315',
+                   annotation_col = c2.info[,c(2,3,5)],
+                   show_rownames = T,
+                   annotation_colors = ha_top.col,
+                   main = 'plu.genes.heatmap',
+                   # breaks = unique(c(seq(0,8, length=256))),
+                   legend_breaks = c(0,4,8),
+                   fontsize_row = 8,
+                   fontsize_col = 8)
+
+pheatmap::pheatmap(t(scale(t(c2.wnt.tpm))),
+                   border_color = NA,
+                   clustering_method = 'ward.D2',
                    color = scales::alpha(rev(colorRampPalette(RColorBrewer::brewer.pal(8,"RdBu"),alpha=T,bias=1)(256)),alpha = 1),
                    angle_col = '315',
-                   annotation_col = sys.anno,
+                   annotation_col = c2.info[,c(2,3,5)],
                    show_rownames = T,
                    annotation_colors = ha_top.col,
                    main = 'wnt.genes.heatmap',
                    breaks = unique(c(seq(-1,3, length=256))),
                    # legend_breaks = c(0,4,8),
                    fontsize_row = 8,
-                   fontsize_col = 5)
-
-pheatmap::pheatmap(log2(c2.wnt.filter.tpm[,c(3:11,14:23,1:2,12:13,24:35)]+1),
-                   border_color = NA,
-                   clustering_method = 'average',
-                   cluster_cols = F,
-                   color = viridis_pal(alpha = 1, begin = .1)(256),
-                   angle_col = '315',
-                   annotation_col = sys.anno,
-                   show_rownames = T,
-                   annotation_colors = ha_top.col,
-                   main = 'wnt.genes.heatmap',
-                   breaks = unique(c(seq(0,8, length=256))),
-                   legend_breaks = c(0,4,8),
-                   fontsize_row = 8,
-                   fontsize_col = 5)
-
+                   fontsize_col = 8)
 
 ### kmeans for rank--fail---------
 
@@ -367,6 +359,44 @@ pheatmap::pheatmap(t(scale(t(c2.wnt.tpm))),
                    # legend_breaks = c(0,4,8),
                    fontsize_row = 8,
                    fontsize_col = 8)
+
+wnt.genes.filter <- c('CSNK1G3','MARK1','NR4A2','CDK14','WNT7A','FZD3','FZD10','PYGO1','LGR4','WLS','WNT5B',' RNF146','RSPO3','TMEM198','RSPO2')
+c2.wnt.filter.tpm <- sys2.high.tpm[wnt.genes.filter,] %>% na.omit()
+ha_top.col <- list(Exogenous = new.col[c(16:17)], 
+                   Author = c(pal_simpsons("springfield")(16)[7:14]), 
+                   System = pal_igv("default")(11))
+names(ha_top.col$Exogenous) <- factor(c("Silencing","Activation"))
+names(ha_top.col$Author) <- factor(unique(sys2.info$Author))
+names(ha_top.col$System) <- factor(unique(sys2.info$System))
+
+pheatmap::pheatmap(t(scale(t(c2.wnt.filter.tpm))),
+                   border_color = NA,
+                   clustering_method = 'average',
+                   color = scales::alpha(rev(colorRampPalette(RColorBrewer::brewer.pal(8,"RdBu"),alpha=T,bias=1)(256)),alpha = 1),
+                   angle_col = '315',
+                   annotation_col = sys.anno,
+                   show_rownames = T,
+                   annotation_colors = ha_top.col,
+                   main = 'wnt.genes.heatmap',
+                   breaks = unique(c(seq(-1,3, length=256))),
+                   # legend_breaks = c(0,4,8),
+                   fontsize_row = 8,
+                   fontsize_col = 5)
+
+pheatmap::pheatmap(log2(c2.wnt.filter.tpm[,c(3:11,14:23,1:2,12:13,24:35)]+1),
+                   border_color = NA,
+                   clustering_method = 'average',
+                   cluster_cols = F,
+                   color = viridis_pal(alpha = 1, begin = .1)(256),
+                   angle_col = '315',
+                   annotation_col = sys.anno,
+                   show_rownames = T,
+                   annotation_colors = ha_top.col,
+                   main = 'wnt.genes.heatmap',
+                   breaks = unique(c(seq(0,8, length=256))),
+                   legend_breaks = c(0,4,8),
+                   fontsize_row = 8,
+                   fontsize_col = 5)
 
 library(reshape2)
 c2.wnt.tpm.rank <- c2.tpm.rank[colnames(wnt.genes),c(1,2,27:38)]
