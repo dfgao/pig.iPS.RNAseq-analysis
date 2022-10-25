@@ -64,6 +64,20 @@ ggplot(go.vis, aes(x=Terms, y=lp)) +
     axis.ticks.y = element_blank()
   )
 
+## TF
+tf.vis <- read.csv('../4.part4/median.cluster15_C4_14_TF.csv',header = T)
+tf.vis$LogP <- -tf.vis$LogP
+tf.vis <- tf.vis[order(tf.vis$LogP),]
+tf.vis$Description <- factor(tf.vis$Description,levels = tf.vis$Description)
+
+ggplot(data = tf.vis, aes(x = LogP, y = Description)) + 
+  geom_point(aes(size = Z.score,color = Enrichment)) +
+  scale_color_gradient(low = 'blue',high = 'red3') +
+  scale_size(range  =  c(0, 6)) +
+  labs( y = 'C4_14 TF targets', x= bquote(~-Log[10]~ 'P')) +
+  theme_bw() +
+  theme(axis.text.y = element_text(size = 10)) 
+
 
 # part5 --------
 go.vis <- read.csv('../5.part5/greenyellow.GOBP.pick.csv',header = T)
