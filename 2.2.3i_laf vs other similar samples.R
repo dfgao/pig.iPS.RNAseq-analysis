@@ -506,7 +506,7 @@ pig.epi.seu <- subset(pig.em.seu,cells=c(rownames(pig.em.seu@meta.data[pig.em.se
 
 pig.epi.seu <- pig.epi.seu %>%
   NormalizeData( normalization.method = "LogNormalize", scale.factor = 10000) %>% 
-  FindVariableFeatures( selection.method = "vst", nfeatures = 1000) %>% 
+  FindVariableFeatures( selection.method = "vst", nfeatures = 1500) %>% 
   ScaleData( features = rownames(pig.epi.seu), vars.to.regress = 'mitoRatio') %>% 
   RunUMAP( dims = 1:10)
 
@@ -613,7 +613,14 @@ cpm.pca <- PCA(cpm.t[,-ncol(cpm.t)],graph = FALSE)
 fviz_screeplot(cpm.pca, addlabels = TRUE, ylim = c(0, 10),title='Dim choose')
 
 # predict
+
+# all other cells 
 ind.sup.coord <- predict(cpm.pca, newdata = t(c2.cpm.hvgs))
+ind.sup.coord$coord
+ind.sup.coord$cos2
+
+# only our cells
+ind.sup.coord <- predict(cpm.pca, newdata = t(c2.cpm.hvgs[,25:ncol(c2.cpm.hvgs)]))
 ind.sup.coord$coord
 ind.sup.coord$cos2
 
@@ -640,7 +647,14 @@ fviz_add(p, ind.sup.coord$coord,
          # geom = c("point", "text"),
          pointsize = 3,
          alpha=0.5)
-
+fviz_add(p, ind.sup.coord$coord, 
+         color = c( rep('#8C6D36',2), rep('#CB70C0',4), rep('#EBB854',4), rep('#FC8D37',4)),
+         repel = T,
+         addlabel = F,
+         # labelsize =4,
+         # geom = c("point", "text"),
+         pointsize = 3,
+         alpha=0.5)
 
 show_col(c(rep("#2A82C6",2), rep("#7C4374",9),rep('#B09C85FF',2), rep('#339E55',2), rep('#000376',9), rep('#8C6D36',2), rep('#CB70C0',4), rep('#EBB854',4), rep('#FC8D37',4)),ncol = 1,labels = F)
 
@@ -691,7 +705,18 @@ export(cell.fraction,file = '../3.part3/cell.fraction.xlsx')
 # # signatures=ed.markers.cpm
 # DeconRNASeq(c2.cpm, ed.markers.top100.cpm,checksig=FALSE,
 #             known.prop = F, use.scale = TRUE, fig = TRUE)
+# plot
+cell.fraction.plot <- data.frame(cell.fraction$out.all)
+cell.fraction.plot$Samples <- colnames(c2.cpm.hvgs[,25:ncol(c2.cpm.hvgs)])
+cell.fraction.plot <- melt(cell.fraction.plot,variable.name = 'Embryonic_Day',id.vars = 'Samples',value.name = 'Fraction')
+cell.fraction.plot$Embryonic_Day <- factor(cell.fraction.plot$Embryonic_Day, levels = c('E14','E13','E12','E11','E10'))
 
+ggplot(cell.fraction.plot, aes(fill=Embryonic_Day, y=Fraction, x=Samples)) + 
+  geom_bar( stat="identity") + 
+  coord_flip() + 
+  guides(fill = guide_legend(reverse=TRUE)) +
+  theme_bw() +
+  scale_fill_manual( values = c("#CAB2D6","#FF7F00", "#FDBF6F",  "#E31A1C", "#FB9A99"))
 
 # WGCNA ---------
 
