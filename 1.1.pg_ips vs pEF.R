@@ -318,7 +318,7 @@ venn(my.up,
 my.down <- list(pgEpiSC = DEG1[DEG1$log2FoldChange < -2 & DEG1$padj < 0.05,]$Symbol, 
               NGR.iPS = DEG2[DEG2$log2FoldChange < -2 & DEG2$padj < 0.05,]$Symbol,
               pEF.iPS = DEG3[DEG3$log2FoldChange < -2 & DEG3$padj < 0.05,]$Symbol,
-              pEF.pMX = DEG1[DEG4$log2FoldChange < -2 & DEG4$padj < 0.05,]$Symbol)
+              pEF.pMX = DEG4[DEG4$log2FoldChange < -2 & DEG4$padj < 0.05,]$Symbol)
 
 my.down.venn <- Venn(my.down)
 Vennerable::plot(my.down.venn,doWeights = F)
