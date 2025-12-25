@@ -1,2 +1,3 @@
 # pig.iPS.RNAseq-analysis
-for pig.iPS.RNAseq analysis pipeline
+Pipeline of pig.iPS.RNAseq datasets
+DOI:https://doi.org/10.1111/cpr.13487
